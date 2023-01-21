@@ -1,6 +1,7 @@
 import * as fns from 'date-fns'
 import { md } from 'telegram-md'
 import { Category, Operation, Wallet } from './classes/ExpenseState'
+import { formatAmount } from './utils/formatAmount'
 
 export const MESSAGES = {
   addWallet: {
@@ -10,7 +11,7 @@ export const MESSAGES = {
     balance: 'Введите начальный баланс кошелька:',
     done: (wallet: Wallet, balance: number) =>
       md`Кошелек ${md.bold(wallet.name)} с балансом ${md.bold(
-        `${balance}${wallet.currency}`
+        `${formatAmount(balance, wallet.currency)}`
       )} успешно добавлен`,
   },
 
@@ -25,7 +26,7 @@ export const MESSAGES = {
       md`Операция ${md.bold(
         `${operation.name} (${category.name})`
       )} на сумму ${md.bold(
-        `${operation.amount}${wallet.currency}`
+        `${formatAmount(operation.amount, wallet.currency)}`
       )} успешно добавлена`,
   },
 
@@ -34,7 +35,10 @@ export const MESSAGES = {
       md.join(
         balances.map(
           ({ wallet, balance }) =>
-            md`${md.bold(wallet.name)}: ${balance}${wallet.currency}`
+            md`${md.bold(wallet.name)}: ${formatAmount(
+              balance,
+              wallet.currency
+            )}`
         ),
         '\n'
       ),
@@ -51,7 +55,7 @@ export const MESSAGES = {
               md`${md.bold(operation.name)} [${fns.format(
                 new Date(operation.date),
                 'dd.MM HH:mm'
-              )}]: ${operation.amount}${wallet.currency}`
+              )}]: ${formatAmount(operation.amount, wallet.currency)}`
           ),
         ],
         '\n'
