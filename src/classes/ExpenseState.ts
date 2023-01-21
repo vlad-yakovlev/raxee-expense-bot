@@ -1,53 +1,76 @@
 import { v4 as uuid } from 'uuid'
 
-export interface Category {
-  id: string
-  name: string
-}
-
-export interface Expense {
-  id: string
-  name: string
-  amount: number
-  categoryId: string
-  walletId: string
-}
-
 export interface Wallet {
   id: string
   name: string
   currency: string
 }
 
+export interface Category {
+  id: string
+  name: string
+}
+
+export interface Operation {
+  id: string
+  name: string
+  date: string
+  amount: number
+  categoryId: string
+  walletId: string
+}
+
 export interface ExpenseStateRaw {
-  categories: Category[]
-  expenses: Expense[]
   wallets: Wallet[]
+  categories: Category[]
+  operations: Operation[]
 }
 
 export class ExpenseState {
-  private categories: Category[] = []
-  private expenses: Expense[] = []
-  private wallets: Wallet[] = []
+  wallets: Wallet[] = []
+  categories: Category[] = []
+  operations: Operation[] = []
 
   static fromRaw(expenseStateRaw: ExpenseStateRaw): ExpenseState {
     const expenseState = new ExpenseState()
     expenseState.categories = expenseStateRaw.categories
-    expenseState.expenses = expenseStateRaw.expenses
+    expenseState.operations = expenseStateRaw.operations
     expenseState.wallets = expenseStateRaw.wallets
     return expenseState
   }
 
   toRaw(): ExpenseStateRaw {
     return {
-      categories: this.categories,
-      expenses: this.expenses,
       wallets: this.wallets,
+      categories: this.categories,
+      operations: this.operations,
     }
   }
 
-  createCategory(name: string) {
-    const category = {
+  createWallet(name: string, currency: string, balance: number): Wallet {
+    const wallet: Wallet = {
+      id: uuid(),
+      name,
+      currency,
+    }
+
+    this.createOperation(
+      'INIT',
+      balance,
+      this.getOrCreateCategory('INIT'),
+      wallet
+    )
+
+    this.wallets.push(wallet)
+    return wallet
+  }
+
+  getWallet(name: string): Wallet | undefined {
+    return this.wallets.find((wallet) => wallet.name === name)
+  }
+
+  createCategory(name: string): Category {
+    const category: Category = {
       id: uuid(),
       name,
     }
@@ -56,43 +79,30 @@ export class ExpenseState {
     return category
   }
 
-  findCategoryByName(name: string) {
+  getCategory(name: string): Category | undefined {
     return this.categories.find((category) => category.name === name)
   }
 
-  createExpense(
-    name: string,
-    amount: number,
-    categoryId: string,
-    walletId: string
-  ) {
-    const expense = {
-      id: uuid(),
-      name,
-      amount,
-      categoryId,
-      walletId,
-    }
-
-    this.expenses.push(expense)
-    return expense
+  getOrCreateCategory(name: string): Category {
+    return this.getCategory(name) || this.createCategory(name)
   }
 
-  createWallet(name: string, currency: string, balance: number) {
-    const wallet = {
+  createOperation(
+    name: string,
+    amount: number,
+    category: Category,
+    wallet: Wallet
+  ): Operation {
+    const operation: Operation = {
       id: uuid(),
       name,
-      currency,
+      date: new Date().toISOString(),
+      amount,
+      categoryId: category.id,
+      walletId: wallet.id,
     }
 
-    this.createExpense(
-      'INIT',
-      balance,
-      (this.findCategoryByName('INIT') || this.createCategory('INIT')).id,
-      wallet.id
-    )
-
-    this.wallets.push(wallet)
-    return wallet
+    this.operations.push(operation)
+    return operation
   }
 }

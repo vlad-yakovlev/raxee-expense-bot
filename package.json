@@ -13,7 +13,6 @@
     "test:ci": "jest"
   },
   "dependencies": {
-    "@grammyjs/conversations": "^1.1.0",
     "@grammyjs/storage-file": "^2.1.0",
     "async-pause": "^1.0.0",
     "date-fns": "^2.29.3",

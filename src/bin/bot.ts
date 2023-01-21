@@ -1,7 +1,7 @@
-import { conversations, createConversation } from '@grammyjs/conversations'
 import { Bot } from 'grammy'
 import { replyWithMarkdownPlugin } from 'grammy-reply-with-markdown'
-import { MESSAGES } from '../constants'
+import { AddOperationConversation } from '../classes/AddOperationConversation'
+import { AddWalletConversation } from '../classes/AddWalletConversation'
 import { sessionMiddleware } from '../middleware/session'
 import { CustomContext } from '../types'
 import { handleError } from '../utils/handleError'
@@ -21,42 +21,29 @@ export const runBot = async (options: RunBotOptions) => {
       command: 'add_wallet',
       description: 'Добавить кошелек',
     },
+    {
+      command: 'add_operation',
+      description: 'Добавить операцию',
+    },
   ])
 
-  bot.use(conversations())
-
   bot.command('cancel', async (ctx) => {
-    await ctx.conversation.exit()
+    await ctx.session.conversation.stopConversation()
   })
 
-  bot.use(
-    createConversation(async (conversation, ctx) => {
-      await ctx.replyWithMarkdown(MESSAGES.addWallet.start)
-
-      await ctx.replyWithMarkdown(MESSAGES.addWallet.name)
-      const nameResponse = await conversation.waitFor('message:text')
-      const name = nameResponse.msg.text
-
-      await ctx.replyWithMarkdown(MESSAGES.addWallet.currency)
-      const currencyResponse = await conversation.waitFor('message:text')
-      const currency = currencyResponse.msg.text
-
-      let balance = NaN
-      while (isNaN(balance)) {
-        await ctx.replyWithMarkdown(MESSAGES.addWallet.balance)
-        const balanceResponse = await conversation.waitFor('message:text')
-        balance = Number(balanceResponse.msg.text)
-      }
-
-      conversation.session.expense.createWallet(name, currency, balance)
-      await ctx.replyWithMarkdown(
-        MESSAGES.addWallet.done(name, currency, balance)
-      )
-    }, 'add_wallet')
-  )
-
   bot.command('add_wallet', async (ctx) => {
-    await ctx.conversation.enter('add_wallet')
+    await ctx.session.conversation.startConversation(ctx, AddWalletConversation)
+  })
+
+  bot.command('add_operation', async (ctx) => {
+    await ctx.session.conversation.startConversation(
+      ctx,
+      AddOperationConversation
+    )
+  })
+
+  bot.on('message:text', async (ctx) => {
+    await ctx.session.conversation.handleMessage(ctx)
   })
 
   bot.catch(handleError)
