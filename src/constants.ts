@@ -22,7 +22,7 @@ export const MESSAGES = {
     wallet: 'Выберите кошелек:',
     category: 'Введите название категории:',
     type: 'Выберите тип операции:',
-    name: 'Введите название операции:',
+    name: 'Введите описание операции:',
     amount: 'Введите сумму операции:',
     done: (operation: Operation, wallet: Wallet, category: Category) =>
       md`Операция ${md.bold(
