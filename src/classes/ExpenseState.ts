@@ -1,4 +1,5 @@
 import { v4 as uuid } from 'uuid'
+import { INITIAL_BALANCE } from '../constants'
 
 export interface Wallet {
   id: string
@@ -55,9 +56,9 @@ export class ExpenseState {
     }
 
     this.createOperation(
-      'INIT',
+      INITIAL_BALANCE,
       balance,
-      this.getOrCreateCategory('INIT'),
+      this.getOrCreateCategory(INITIAL_BALANCE),
       wallet
     )
 

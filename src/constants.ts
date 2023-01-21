@@ -3,6 +3,8 @@ import { md } from 'telegram-md'
 import { Category, Operation, Wallet } from './classes/ExpenseState'
 import { formatAmount } from './utils/formatAmount'
 
+export const INITIAL_BALANCE = 'Начальный баланс'
+
 export const MESSAGES = {
   addWallet: {
     start: 'Выйти из добавления кошелька можно при помощи /cancel',
