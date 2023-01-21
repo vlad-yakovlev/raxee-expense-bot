@@ -105,4 +105,22 @@ export class ExpenseState {
     this.operations.push(operation)
     return operation
   }
+
+  getBalances() {
+    return this.wallets.map((wallet) => {
+      const balance = this.operations.reduce<number>(
+        (sum, operation) =>
+          operation.walletId === wallet.id ? sum + operation.amount : sum,
+        0
+      )
+
+      return { wallet, balance }
+    })
+  }
+
+  getLastOperations(wallet: Wallet, count: number) {
+    return this.operations
+      .filter((operation) => operation.walletId === wallet.id)
+      .slice(-count)
+  }
 }

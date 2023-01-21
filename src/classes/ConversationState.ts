@@ -8,25 +8,22 @@ export class ConversationState {
     return this.conversation?.questions.find((question) => !question.answered())
   }
 
-  private async handleNext(ctx: CustomContext) {
+  private async step(ctx: CustomContext) {
     const question = this.nextQuestion
     if (question) {
       await question.sendMessage(ctx)
     } else {
       await this.conversation?.handleDone(ctx, this.conversation.answers)
-      await this.stopConversation()
+      await this.stop()
     }
   }
 
-  async startConversation(
-    ctx: CustomContext,
-    Conversation: new () => BaseConversation
-  ) {
+  async start(ctx: CustomContext, Conversation: new () => BaseConversation) {
     this.conversation = new Conversation()
-    await this.handleNext(ctx)
+    await this.step(ctx)
   }
 
-  async stopConversation() {
+  async stop() {
     this.conversation = null
   }
 
@@ -36,6 +33,6 @@ export class ConversationState {
       await question.handleReply(ctx)
     }
 
-    await this.handleNext(ctx)
+    await this.step(ctx)
   }
 }

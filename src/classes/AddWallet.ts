@@ -8,7 +8,7 @@ interface Answers {
   balance: number
 }
 
-export class AddWalletConversation extends BaseConversation<Answers> {
+export class AddWallet extends BaseConversation<Answers> {
   questions: ConversationQuestion[] = [
     {
       answered: () => !!this.answers.name,
@@ -41,7 +41,7 @@ export class AddWalletConversation extends BaseConversation<Answers> {
 
   async handleDone(ctx: CustomContext, answers: Answers) {
     const wallet = ctx.session.expense.createWallet(
-      `${answers.name} (${answers.currency})`,
+      answers.name,
       answers.currency,
       answers.balance
     )

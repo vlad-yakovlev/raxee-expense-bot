@@ -1,7 +1,9 @@
 import { Bot } from 'grammy'
 import { replyWithMarkdownPlugin } from 'grammy-reply-with-markdown'
-import { AddOperationConversation } from '../classes/AddOperationConversation'
-import { AddWalletConversation } from '../classes/AddWalletConversation'
+import { AddOperation } from '../classes/AddOperation'
+import { AddWallet } from '../classes/AddWallet'
+import { ShowBalances } from '../classes/ShowBalances'
+import { ShowLastOperations } from '../classes/ShowLastOperations'
 import { sessionMiddleware } from '../middleware/session'
 import { CustomContext } from '../types'
 import { handleError } from '../utils/handleError'
@@ -25,21 +27,34 @@ export const runBot = async (options: RunBotOptions) => {
       command: 'add_operation',
       description: 'Добавить операцию',
     },
+    {
+      command: 'show_balances',
+      description: 'Показать балансы кошельков',
+    },
+    {
+      command: 'show_last_operations',
+      description: 'Показать последние операции',
+    },
   ])
 
   bot.command('cancel', async (ctx) => {
-    await ctx.session.conversation.stopConversation()
+    await ctx.session.conversation.stop()
   })
 
   bot.command('add_wallet', async (ctx) => {
-    await ctx.session.conversation.startConversation(ctx, AddWalletConversation)
+    await ctx.session.conversation.start(ctx, AddWallet)
   })
 
   bot.command('add_operation', async (ctx) => {
-    await ctx.session.conversation.startConversation(
-      ctx,
-      AddOperationConversation
-    )
+    await ctx.session.conversation.start(ctx, AddOperation)
+  })
+
+  bot.command('show_balances', async (ctx) => {
+    await ctx.session.conversation.start(ctx, ShowBalances)
+  })
+
+  bot.command('show_last_operations', async (ctx) => {
+    await ctx.session.conversation.start(ctx, ShowLastOperations)
   })
 
   bot.on('message:text', async (ctx) => {

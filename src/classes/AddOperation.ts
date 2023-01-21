@@ -11,7 +11,7 @@ interface Answers {
   amount: number
 }
 
-export class AddOperationConversation extends BaseConversation<Answers> {
+export class AddOperation extends BaseConversation<Answers> {
   questions: ConversationQuestion[] = [
     {
       answered: () => !!this.answers.wallet,
@@ -89,8 +89,9 @@ export class AddOperationConversation extends BaseConversation<Answers> {
       answers.category,
       answers.wallet
     )
-    await ctx.reply(
-      MESSAGES.addOperation.done(operation, answers.wallet, answers.category)
+    await ctx.replyWithMarkdown(
+      MESSAGES.addOperation.done(operation, answers.wallet, answers.category),
+      { reply_markup: { remove_keyboard: true } }
     )
   }
 }
