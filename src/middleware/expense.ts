@@ -5,7 +5,7 @@ import { CustomContext } from '../types'
 
 export const expenseMiddleware = (prisma: PrismaClient) => {
   return async (ctx: CustomContext, next: NextFunction) => {
-    ctx.expense = new Expense(prisma)
+    ctx.expense = new Expense(ctx, prisma)
     await next()
   }
 }

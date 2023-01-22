@@ -42,7 +42,6 @@ export class AddWallet extends BaseConversation<Answers> {
 
   async handleDone(ctx: CustomContext, answers: Answers) {
     const wallet = await ctx.expense.createWallet(
-      String(ctx.chat?.id),
       answers.name,
       answers.currency,
       answers.balance

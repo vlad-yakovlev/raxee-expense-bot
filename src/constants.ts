@@ -1,7 +1,8 @@
 import { Operation, Wallet } from '@prisma/client'
-import * as fns from 'date-fns'
 import { md } from 'telegram-md'
 import { formatAmount } from './utils/formatAmount'
+import { formatDate } from './utils/formatDate'
+import { formatOperation } from './utils/formatOperation'
 
 export const AMOUNT_MULTIPLIER = 1e4
 export const LAST_OPERATIONS_COUNT = 10
@@ -10,7 +11,6 @@ export const INITIAL_BALANCE = 'Начальный баланс'
 
 export const MESSAGES = {
   addWallet: {
-    start: 'Выйти из добавления кошелька можно при помощи /cancel',
     name: 'Введите название кошелька:',
     currency: 'Введите валюту кошелька:',
     balance: 'Введите начальный баланс кошелька:',
@@ -20,31 +20,48 @@ export const MESSAGES = {
       )} успешно добавлен`,
   },
 
+  editWallet: {
+    wallet: 'Выберите кошелек:',
+    name: 'Введите название кошелька:',
+    currency: 'Введите валюту кошелька:',
+    done: (wallet: Wallet) =>
+      md`Кошелек ${md.bold(wallet.name)} успешно обновлен`,
+  },
+
   addOperation: {
-    start: 'Выйти из добавления операции можно при помощи /cancel',
     wallet: 'Выберите кошелек:',
     category: 'Введите название категории:',
     type: 'Выберите тип операции:',
     description: 'Введите описание операции:',
     amount: 'Введите сумму операции:',
     done: (wallet: Wallet, operation: Operation) =>
-      md`Операция ${md.bold(
-        `${operation.description} (${operation.category})`
-      )} на сумму ${md.bold(
-        `${formatAmount(operation.amount, wallet.currency)}`
-      )} успешно добавлена`,
+      md`Операция ${formatOperation(wallet, operation)} успешно добавлена`,
+  },
+
+  editOperation: {
+    wallet: 'Выберите кошелек:',
+    operation: 'Выберите операцию:',
+    category: 'Введите название категории:',
+    type: 'Выберите тип операции:',
+    description: 'Введите описание операции:',
+    amount: 'Введите сумму операции:',
+    done: (wallet: Wallet, operation: Operation) =>
+      md`Операция ${formatOperation(wallet, operation)} успешно обновлена`,
   },
 
   showBalances: {
     done: (balances: { wallet: Wallet; balance: number }[]) =>
       md.join(
-        balances.map(
-          ({ wallet, balance }) =>
-            md`${md.bold(wallet.name)}: ${formatAmount(
-              balance,
-              wallet.currency
-            )}`
-        ),
+        [
+          `Балансы кошельков на ${formatDate(Date.now())}:`,
+          ...balances.map(
+            ({ wallet, balance }) =>
+              md`${md.bold(wallet.name)}: ${formatAmount(
+                balance,
+                wallet.currency
+              )}`
+          ),
+        ],
         '\n'
       ),
   },
@@ -56,14 +73,10 @@ export const MESSAGES = {
         [
           md`Последние ${count} операций по кошельку ${md.bold(wallet.name)}:`,
           ...operations.map(
-            (operation) =>
-              md`${md.bold(operation.description)} [${fns.format(
-                new Date(operation.date),
-                'dd.MM HH:mm'
-              )}]: ${formatAmount(operation.amount, wallet.currency)}`
+            (operation) => md`- ${formatOperation(wallet, operation)}`
           ),
         ],
-        '\n'
+        '\n\n'
       ),
   },
 }

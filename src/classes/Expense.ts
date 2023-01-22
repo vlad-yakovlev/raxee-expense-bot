@@ -1,18 +1,18 @@
 import { PrismaClient } from '@prisma/client'
 import { INITIAL_BALANCE } from '../constants'
+import { CustomContext } from '../types'
 
 export class Expense {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private ctx: CustomContext, private prisma: PrismaClient) {}
 
-  async createWallet(
-    chatId: string,
-    name: string,
-    currency: string,
-    balance: number
-  ) {
+  private get chatId() {
+    return String(this.ctx.chat?.id)
+  }
+
+  async createWallet(name: string, currency: string, balance: number) {
     return await this.prisma.wallet.create({
       data: {
-        chatId,
+        chatId: this.chatId,
         name,
         currency,
         operations: {
@@ -28,12 +28,34 @@ export class Expense {
     })
   }
 
-  async getWallet(chatId: string, name: string) {
-    return await this.prisma.wallet.findFirst({ where: { chatId, name } })
+  async updateWallet(id: string, name: string, currency: string) {
+    return await this.prisma.wallet.update({
+      where: {
+        chatId: this.chatId,
+        id,
+      },
+      data: {
+        name,
+        currency,
+      },
+    })
   }
 
-  async getWallets(chatId: string) {
-    return await this.prisma.wallet.findMany({ where: { chatId } })
+  async getWallet(id: string) {
+    return await this.prisma.wallet.findFirst({
+      where: {
+        chatId: this.chatId,
+        id,
+      },
+    })
+  }
+
+  async getWallets() {
+    return await this.prisma.wallet.findMany({
+      where: {
+        chatId: this.chatId,
+      },
+    })
   }
 
   async createOperation(
@@ -52,14 +74,66 @@ export class Expense {
     })
   }
 
-  async getBalances(chatId: string) {
-    const wallets = await this.getWallets(chatId)
+  async updateOperation(
+    id: string,
+    description: string,
+    amount: number,
+    category: string
+  ) {
+    return await this.prisma.operation.update({
+      where: {
+        wallet: {
+          chatId: this.chatId,
+        },
+        id,
+      },
+      data: {
+        description,
+        amount,
+        category,
+      },
+    })
+  }
+
+  async getOperation(id: string) {
+    return await this.prisma.operation.findFirst({
+      where: {
+        wallet: {
+          chatId: this.chatId,
+        },
+        id,
+      },
+    })
+  }
+
+  async getLastOperations(walletId: string, count: number) {
+    const operations = await this.prisma.operation.findMany({
+      where: {
+        wallet: {
+          chatId: this.chatId,
+          id: walletId,
+        },
+      },
+      orderBy: {
+        date: 'desc',
+      },
+      take: count,
+    })
+    return operations.reverse()
+  }
+
+  async getBalances() {
+    const wallets = await this.getWallets()
 
     return Promise.all(
       wallets.map(async (wallet) => {
         const aggregations = await this.prisma.operation.aggregate({
-          where: { wallet },
-          _sum: { amount: true },
+          where: {
+            wallet,
+          },
+          _sum: {
+            amount: true,
+          },
         })
 
         return {
@@ -68,14 +142,5 @@ export class Expense {
         }
       })
     )
-  }
-
-  async getLastOperations(walletId: string, count: number) {
-    const operations = await this.prisma.operation.findMany({
-      where: { walletId },
-      orderBy: { date: 'desc' },
-      take: count,
-    })
-    return operations.reverse()
   }
 }

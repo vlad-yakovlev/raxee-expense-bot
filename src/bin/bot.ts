@@ -3,6 +3,8 @@ import { Bot } from 'grammy'
 import { replyWithMarkdownPlugin } from 'grammy-reply-with-markdown'
 import { AddOperation } from '../classes/AddOperation'
 import { AddWallet } from '../classes/AddWallet'
+import { EditOperation } from '../classes/EditOperation'
+import { EditWallet } from '../classes/EditWallet'
 import { ShowBalances } from '../classes/ShowBalances'
 import { ShowLastOperations } from '../classes/ShowLastOperations'
 import { expenseMiddleware } from '../middleware/expense'
@@ -28,8 +30,16 @@ export const runBot = async (options: RunBotOptions) => {
       description: 'Добавить кошелек',
     },
     {
+      command: 'edit_wallet',
+      description: 'Редактировать кошелек',
+    },
+    {
       command: 'add_operation',
       description: 'Добавить операцию',
+    },
+    {
+      command: 'edit_operation',
+      description: 'Редактировать операцию',
     },
     {
       command: 'show_balances',
@@ -41,16 +51,20 @@ export const runBot = async (options: RunBotOptions) => {
     },
   ])
 
-  bot.command('cancel', async (ctx) => {
-    await ctx.session.conversation.stop()
-  })
-
   bot.command('add_wallet', async (ctx) => {
     await ctx.session.conversation.start(ctx, AddWallet)
   })
 
+  bot.command('edit_wallet', async (ctx) => {
+    await ctx.session.conversation.start(ctx, EditWallet)
+  })
+
   bot.command('add_operation', async (ctx) => {
     await ctx.session.conversation.start(ctx, AddOperation)
+  })
+
+  bot.command('edit_operation', async (ctx) => {
+    await ctx.session.conversation.start(ctx, EditOperation)
   })
 
   bot.command('show_balances', async (ctx) => {

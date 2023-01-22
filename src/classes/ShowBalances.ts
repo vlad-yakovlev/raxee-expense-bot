@@ -10,9 +10,7 @@ export class ShowBalances extends BaseConversation<Answers> {
 
   async handleDone(ctx: CustomContext) {
     await ctx.replyWithMarkdown(
-      MESSAGES.showBalances.done(
-        await ctx.expense.getBalances(String(ctx.chat?.id))
-      )
+      MESSAGES.showBalances.done(await ctx.expense.getBalances())
     )
   }
 }
