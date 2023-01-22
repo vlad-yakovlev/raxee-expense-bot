@@ -35,8 +35,8 @@ export class Expense {
   async updateWallet(id: string, data: { name: string; currency: string }) {
     return await this.prisma.wallet.update({
       where: {
-        chatId: this.chatId,
         id,
+        chatId: this.chatId,
       },
       data: {
         name: data.name,
@@ -48,8 +48,8 @@ export class Expense {
   async getWallet(id: string) {
     return await this.prisma.wallet.findFirst({
       where: {
-        chatId: this.chatId,
         id,
+        chatId: this.chatId,
       },
     })
   }
@@ -118,8 +118,8 @@ export class Expense {
     const operations = await this.prisma.operation.findMany({
       where: {
         wallet: {
-          chatId: this.chatId,
           id: params.walletId,
+          chatId: this.chatId,
         },
       },
       orderBy: {
