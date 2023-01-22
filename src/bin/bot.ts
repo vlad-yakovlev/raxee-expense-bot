@@ -1,3 +1,4 @@
+import { PrismaClient } from '@prisma/client'
 import { Bot } from 'grammy'
 import { replyWithMarkdownPlugin } from 'grammy-reply-with-markdown'
 import { AddOperation } from '../classes/AddOperation'
@@ -14,10 +15,12 @@ interface RunBotOptions {
 }
 
 export const runBot = async (options: RunBotOptions) => {
+  const prisma = new PrismaClient()
+
   const bot = new Bot<CustomContext>(options.botToken)
   bot.use(replyWithMarkdownPlugin())
   bot.use(sessionMiddleware())
-  bot.use(expenseMiddleware())
+  bot.use(expenseMiddleware(prisma))
 
   await bot.api.setMyCommands([
     {
