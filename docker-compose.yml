@@ -20,7 +20,7 @@ services:
       MONGODB_ADVERTISED_HOSTNAME: mongo
       MONGODB_REPLICA_SET_MODE: primary
     volumes:
-      - $PWD/db:/bitnami
+      - $PWD/db:/bitnami/mongodb/data/db
     restart: always
 
   mongo-secondary:
