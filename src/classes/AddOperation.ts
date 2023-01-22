@@ -9,7 +9,6 @@ interface Answers {
   wallet: Wallet
   category: string
   description: string
-  sign: number
   amount: number
 }
 
@@ -58,21 +57,6 @@ export class AddOperation extends BaseConversation<Answers> {
       },
     },
     {
-      answered: () => !!this.answers.sign,
-      sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.addOperation.type, {
-          reply_markup: { keyboard: [['+', '-']] },
-        })
-      },
-      handleReply: (ctx) => {
-        if (ctx.message?.text === '+') {
-          this.answers.sign = 1
-        } else if (ctx.message?.text === '-') {
-          this.answers.sign = -1
-        }
-      },
-    },
-    {
       answered: () => !!this.answers.amount && !isNaN(this.answers.amount),
       sendMessage: async (ctx) => {
         await ctx.replyWithMarkdown(MESSAGES.addOperation.amount, {
@@ -86,12 +70,13 @@ export class AddOperation extends BaseConversation<Answers> {
   ]
 
   async handleDone(ctx: CustomContext, answers: Answers) {
-    const operation = await ctx.expense.createOperation(
-      answers.description,
-      answers.sign * answers.amount,
-      answers.category,
-      answers.wallet.id
-    )
+    const operation = await ctx.expense.createOperation({
+      description: answers.description,
+      amount: answers.amount,
+      category: answers.category,
+      walletId: answers.wallet.id,
+    })
+
     await ctx.replyWithMarkdown(
       MESSAGES.addOperation.done(answers.wallet, operation),
       { reply_markup: { remove_keyboard: true } }

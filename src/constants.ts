@@ -31,7 +31,6 @@ export const MESSAGES = {
   addOperation: {
     wallet: 'Выберите кошелек:',
     category: 'Введите название категории:',
-    type: 'Выберите тип операции:',
     description: 'Введите описание операции:',
     amount: 'Введите сумму операции:',
     done: (wallet: Wallet, operation: Operation) =>
@@ -39,10 +38,9 @@ export const MESSAGES = {
   },
 
   editOperation: {
-    wallet: 'Выберите кошелек:',
     operation: 'Выберите операцию:',
+    wallet: 'Выберите кошелек:',
     category: 'Введите название категории:',
-    type: 'Выберите тип операции:',
     description: 'Введите описание операции:',
     amount: 'Введите сумму операции:',
     done: (wallet: Wallet, operation: Operation) =>
@@ -62,7 +60,7 @@ export const MESSAGES = {
               )}`
           ),
         ],
-        '\n'
+        '\n\n'
       ),
   },
 
@@ -73,7 +71,7 @@ export const MESSAGES = {
         [
           md`Последние ${count} операций по кошельку ${md.bold(wallet.name)}:`,
           ...operations.map(
-            (operation) => md`- ${formatOperation(wallet, operation)}`
+            (operation) => md`${formatOperation(wallet, operation)}`
           ),
         ],
         '\n\n'

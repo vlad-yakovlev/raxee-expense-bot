@@ -36,10 +36,10 @@ export class ShowLastOperations extends BaseConversation<Answers> {
     await ctx.replyWithMarkdown(
       MESSAGES.showLastOperations.done(
         answers.wallet,
-        await ctx.expense.getLastOperations(
-          answers.wallet.id,
-          LAST_OPERATIONS_COUNT
-        ),
+        await ctx.expense.getLastOperations({
+          walletId: answers.wallet.id,
+          count: LAST_OPERATIONS_COUNT,
+        }),
         LAST_OPERATIONS_COUNT
       ),
       { reply_markup: { remove_keyboard: true } }

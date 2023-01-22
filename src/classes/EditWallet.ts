@@ -57,11 +57,11 @@ export class EditWallet extends BaseConversation<Answers> {
   ]
 
   async handleDone(ctx: CustomContext, answers: Answers) {
-    const wallet = await ctx.expense.updateWallet(
-      answers.wallet.id,
-      answers.name,
-      answers.currency
-    )
+    const wallet = await ctx.expense.updateWallet(answers.wallet.id, {
+      name: answers.name,
+      currency: answers.currency,
+    })
+
     await ctx.replyWithMarkdown(MESSAGES.editWallet.done(wallet), {
       reply_markup: { remove_keyboard: true },
     })

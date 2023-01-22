@@ -41,11 +41,12 @@ export class AddWallet extends BaseConversation<Answers> {
   ]
 
   async handleDone(ctx: CustomContext, answers: Answers) {
-    const wallet = await ctx.expense.createWallet(
-      answers.name,
-      answers.currency,
-      answers.balance
-    )
+    const wallet = await ctx.expense.createWallet({
+      name: answers.name,
+      currency: answers.currency,
+      balance: answers.balance,
+    })
+
     await ctx.replyWithMarkdown(
       MESSAGES.addWallet.done(wallet, answers.balance)
     )

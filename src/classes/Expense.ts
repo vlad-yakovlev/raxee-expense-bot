@@ -9,17 +9,21 @@ export class Expense {
     return String(this.ctx.chat?.id)
   }
 
-  async createWallet(name: string, currency: string, balance: number) {
+  async createWallet(data: {
+    name: string
+    currency: string
+    balance: number
+  }) {
     return await this.prisma.wallet.create({
       data: {
         chatId: this.chatId,
-        name,
-        currency,
+        name: data.name,
+        currency: data.currency,
         operations: {
           create: [
             {
               description: INITIAL_BALANCE,
-              amount: balance,
+              amount: data.balance,
               category: INITIAL_BALANCE,
             },
           ],
@@ -28,15 +32,15 @@ export class Expense {
     })
   }
 
-  async updateWallet(id: string, name: string, currency: string) {
+  async updateWallet(id: string, data: { name: string; currency: string }) {
     return await this.prisma.wallet.update({
       where: {
         chatId: this.chatId,
         id,
       },
       data: {
-        name,
-        currency,
+        name: data.name,
+        currency: data.currency,
       },
     })
   }
@@ -58,27 +62,30 @@ export class Expense {
     })
   }
 
-  async createOperation(
-    description: string,
-    amount: number,
-    category: string,
+  async createOperation(data: {
+    description: string
+    amount: number
+    category: string
     walletId: string
-  ) {
+  }) {
     return await this.prisma.operation.create({
       data: {
-        description,
-        amount,
-        category,
-        walletId,
+        description: data.description,
+        amount: data.amount,
+        category: data.category,
+        walletId: data.walletId,
       },
     })
   }
 
   async updateOperation(
     id: string,
-    description: string,
-    amount: number,
-    category: string
+    data: {
+      description: string
+      amount: number
+      category: string
+      walletId: string
+    }
   ) {
     return await this.prisma.operation.update({
       where: {
@@ -88,9 +95,10 @@ export class Expense {
         id,
       },
       data: {
-        description,
-        amount,
-        category,
+        description: data.description,
+        amount: data.amount,
+        category: data.category,
+        walletId: data.walletId,
       },
     })
   }
@@ -106,18 +114,18 @@ export class Expense {
     })
   }
 
-  async getLastOperations(walletId: string, count: number) {
+  async getLastOperations(params: { walletId?: string; count: number }) {
     const operations = await this.prisma.operation.findMany({
       where: {
         wallet: {
           chatId: this.chatId,
-          id: walletId,
+          id: params.walletId,
         },
       },
       orderBy: {
         date: 'desc',
       },
-      take: count,
+      take: params.count,
     })
     return operations.reverse()
   }

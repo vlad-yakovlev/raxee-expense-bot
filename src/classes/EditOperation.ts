@@ -11,12 +11,33 @@ interface Answers {
   operation: Operation
   category: string
   description: string
-  sign: number
   amount: number
 }
 
 export class EditOperation extends BaseConversation<Answers> {
   questions: ConversationQuestion[] = [
+    {
+      answered: () => !!this.answers.operation,
+      sendMessage: async (ctx) => {
+        const operations = await ctx.expense.getLastOperations({
+          count: LAST_OPERATIONS_COUNT,
+        })
+        await ctx.replyWithMarkdown(MESSAGES.editOperation.operation, {
+          reply_markup: {
+            keyboard: operations.map((operation) => [
+              `${operation.description} [${operation.id}]`,
+            ]),
+          },
+        })
+      },
+      handleReply: async (ctx) => {
+        const operationId = extractObjectId(ctx.message?.text)
+        if (operationId) {
+          const operation = await ctx.expense.getOperation(operationId)
+          this.answers.operation = operation || undefined
+        }
+      },
+    },
     {
       answered: () => !!this.answers.wallet,
       sendMessage: async (ctx) => {
@@ -34,29 +55,6 @@ export class EditOperation extends BaseConversation<Answers> {
         if (walletId) {
           const wallet = await ctx.expense.getWallet(walletId)
           this.answers.wallet = wallet || undefined
-        }
-      },
-    },
-    {
-      answered: () => !!this.answers.operation,
-      sendMessage: async (ctx) => {
-        const operations = await ctx.expense.getLastOperations(
-          this.answers.wallet?.id || '',
-          LAST_OPERATIONS_COUNT
-        )
-        await ctx.replyWithMarkdown(MESSAGES.editOperation.operation, {
-          reply_markup: {
-            keyboard: operations.map((operation) => [
-              `${operation.description} [${operation.id}]`,
-            ]),
-          },
-        })
-      },
-      handleReply: async (ctx) => {
-        const operationId = extractObjectId(ctx.message?.text)
-        if (operationId) {
-          const operation = await ctx.expense.getOperation(operationId)
-          this.answers.operation = operation || undefined
         }
       },
     },
@@ -87,27 +85,11 @@ export class EditOperation extends BaseConversation<Answers> {
       },
     },
     {
-      answered: () => !!this.answers.sign,
-      sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.editOperation.type, {
-          reply_markup: { keyboard: [['+', '-']] },
-        })
-      },
-      handleReply: (ctx) => {
-        if (ctx.message?.text === '+') {
-          this.answers.sign = 1
-        } else if (ctx.message?.text === '-') {
-          this.answers.sign = -1
-        }
-      },
-    },
-    {
       answered: () => !!this.answers.amount && !isNaN(this.answers.amount),
       sendMessage: async (ctx) => {
-        const amount = Math.abs(this.answers.operation?.amount || 0)
-        const amountStr = formatAmount(amount, '')
+        const amount = formatAmount(this.answers.operation?.amount || 0, '')
         await ctx.replyWithMarkdown(MESSAGES.editOperation.amount, {
-          reply_markup: { keyboard: [[amountStr]] },
+          reply_markup: { keyboard: [[amount]] },
         })
       },
       handleReply: (ctx) => {
@@ -117,12 +99,13 @@ export class EditOperation extends BaseConversation<Answers> {
   ]
 
   async handleDone(ctx: CustomContext, answers: Answers) {
-    const operation = await ctx.expense.updateOperation(
-      answers.operation.id,
-      answers.description,
-      answers.sign * answers.amount,
-      answers.category
-    )
+    const operation = await ctx.expense.updateOperation(answers.operation.id, {
+      description: answers.description,
+      amount: answers.amount,
+      category: answers.category,
+      walletId: answers.wallet.id,
+    })
+
     await ctx.replyWithMarkdown(
       MESSAGES.editOperation.done(answers.wallet, operation),
       { reply_markup: { remove_keyboard: true } }
