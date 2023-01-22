@@ -61,7 +61,7 @@ export const MESSAGES = {
               )}`
           ),
         ],
-        '\n\n'
+        '\n'
       ),
   },
 
