@@ -28,7 +28,7 @@ it('should console error and send reply', () => {
   )
 
   expect(reply).toBeCalledTimes(1)
-  expect(reply).toBeCalledWith('Что-то пошло по пизде ¯\\_(ツ)_/¯', {
+  expect(reply).toBeCalledWith('Что-то сломалось ¯\\_(ツ)_/¯', {
     reply_markup: { remove_keyboard: true },
   })
 })
@@ -59,7 +59,7 @@ it('should handle send reply error', () => {
   expect(consoleError.mock.calls[1]).toEqual([replyError])
 
   expect(reply).toBeCalledTimes(1)
-  expect(reply).toBeCalledWith('Что-то пошло по пизде ¯\\_(ツ)_/¯', {
+  expect(reply).toBeCalledWith('Что-то сломалось ¯\\_(ツ)_/¯', {
     reply_markup: { remove_keyboard: true },
   })
 })

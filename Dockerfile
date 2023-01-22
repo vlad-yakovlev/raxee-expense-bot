@@ -6,5 +6,6 @@ COPY package-lock.json .
 
 RUN npm ci
 COPY . .
+RUN npm run generate-models
 
 CMD [ "npm", "start" ]

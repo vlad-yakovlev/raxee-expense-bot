@@ -1,5 +1,6 @@
 import { MESSAGES } from '../constants'
 import { CustomContext } from '../types'
+import { parseAmount } from '../utils/parseAmount'
 import { BaseConversation, ConversationQuestion } from './BaseConversation'
 
 interface Answers {
@@ -34,13 +35,14 @@ export class AddWallet extends BaseConversation<Answers> {
         await ctx.replyWithMarkdown(MESSAGES.addWallet.balance)
       },
       handleReply: (ctx) => {
-        this.answers.balance = Number(ctx.message?.text)
+        this.answers.balance = parseAmount(ctx.message?.text)
       },
     },
   ]
 
   async handleDone(ctx: CustomContext, answers: Answers) {
-    const wallet = ctx.session.expense.createWallet(
+    const wallet = await ctx.expense.createWallet(
+      String(ctx.chat?.id),
       answers.name,
       answers.currency,
       answers.balance

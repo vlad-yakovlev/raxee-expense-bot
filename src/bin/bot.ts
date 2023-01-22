@@ -4,19 +4,20 @@ import { AddOperation } from '../classes/AddOperation'
 import { AddWallet } from '../classes/AddWallet'
 import { ShowBalances } from '../classes/ShowBalances'
 import { ShowLastOperations } from '../classes/ShowLastOperations'
+import { expenseMiddleware } from '../middleware/expense'
 import { sessionMiddleware } from '../middleware/session'
 import { CustomContext } from '../types'
 import { handleError } from '../utils/handleError'
 
 interface RunBotOptions {
   botToken: string
-  stateDirName: string
 }
 
 export const runBot = async (options: RunBotOptions) => {
   const bot = new Bot<CustomContext>(options.botToken)
   bot.use(replyWithMarkdownPlugin())
-  bot.use(sessionMiddleware(options.stateDirName))
+  bot.use(sessionMiddleware())
+  bot.use(expenseMiddleware())
 
   await bot.api.setMyCommands([
     {
@@ -72,7 +73,6 @@ if (require.main === module) {
 
   runBot({
     botToken: process.env.BOT_TOKEN || '',
-    stateDirName: 'db/v1',
   })
     .then(() => {
       process.exit(0)

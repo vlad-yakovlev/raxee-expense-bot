@@ -1,12 +1,13 @@
+import { Wallet } from '@prisma/client'
 import { MESSAGES } from '../constants'
 import { CustomContext } from '../types'
+import { parseAmount } from '../utils/parseAmount'
 import { BaseConversation, ConversationQuestion } from './BaseConversation'
-import { Category, Wallet } from './ExpenseState'
 
 interface Answers {
   wallet: Wallet
-  category: Category
-  name: string
+  category: string
+  description: string
   sign: number
   amount: number
 }
@@ -16,18 +17,17 @@ export class AddOperation extends BaseConversation<Answers> {
     {
       answered: () => !!this.answers.wallet,
       sendMessage: async (ctx) => {
+        const wallets = await ctx.expense.getWallets(String(ctx.chat?.id))
         await ctx.replyWithMarkdown(MESSAGES.addOperation.wallet, {
-          reply_markup: {
-            keyboard: ctx.session.expense.wallets.map((wallet) => [
-              wallet.name,
-            ]),
-          },
+          reply_markup: { keyboard: wallets.map((wallet) => [wallet.name]) },
         })
       },
-      handleReply: (ctx) => {
-        this.answers.wallet = ctx.session.expense.getWallet(
+      handleReply: async (ctx) => {
+        const wallet = await ctx.expense.getWallet(
+          String(ctx.chat?.id),
           ctx.message?.text || ''
         )
+        this.answers.wallet = wallet || undefined
       },
     },
     {
@@ -38,20 +38,18 @@ export class AddOperation extends BaseConversation<Answers> {
         })
       },
       handleReply: (ctx) => {
-        this.answers.category = ctx.session.expense.getOrCreateCategory(
-          ctx.message?.text || ''
-        )
+        this.answers.category = ctx.message?.text || ''
       },
     },
     {
-      answered: () => !!this.answers.name,
+      answered: () => !!this.answers.description,
       sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.addOperation.name, {
+        await ctx.replyWithMarkdown(MESSAGES.addOperation.description, {
           reply_markup: { remove_keyboard: true },
         })
       },
       handleReply: (ctx) => {
-        this.answers.name = ctx.message?.text
+        this.answers.description = ctx.message?.text
       },
     },
     {
@@ -77,20 +75,20 @@ export class AddOperation extends BaseConversation<Answers> {
         })
       },
       handleReply: (ctx) => {
-        this.answers.amount = Number(ctx.message?.text)
+        this.answers.amount = parseAmount(ctx.message?.text)
       },
     },
   ]
 
   async handleDone(ctx: CustomContext, answers: Answers) {
-    const operation = ctx.session.expense.createOperation(
-      answers.name,
+    const operation = await ctx.expense.createOperation(
+      answers.description,
       answers.sign * answers.amount,
       answers.category,
-      answers.wallet
+      answers.wallet.id
     )
     await ctx.replyWithMarkdown(
-      MESSAGES.addOperation.done(operation, answers.wallet, answers.category),
+      MESSAGES.addOperation.done(answers.wallet, operation),
       { reply_markup: { remove_keyboard: true } }
     )
   }

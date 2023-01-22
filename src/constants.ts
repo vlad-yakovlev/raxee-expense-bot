@@ -1,7 +1,10 @@
+import { Operation, Wallet } from '@prisma/client'
 import * as fns from 'date-fns'
 import { md } from 'telegram-md'
-import { Category, Operation, Wallet } from './classes/ExpenseState'
 import { formatAmount } from './utils/formatAmount'
+
+export const AMOUNT_MULTIPLIER = 1e4
+export const LAST_OPERATIONS_COUNT = 10
 
 export const INITIAL_BALANCE = 'Начальный баланс'
 
@@ -22,11 +25,11 @@ export const MESSAGES = {
     wallet: 'Выберите кошелек:',
     category: 'Введите название категории:',
     type: 'Выберите тип операции:',
-    name: 'Введите описание операции:',
+    description: 'Введите описание операции:',
     amount: 'Введите сумму операции:',
-    done: (operation: Operation, wallet: Wallet, category: Category) =>
+    done: (wallet: Wallet, operation: Operation) =>
       md`Операция ${md.bold(
-        `${operation.name} (${category.name})`
+        `${operation.description} (${operation.category})`
       )} на сумму ${md.bold(
         `${formatAmount(operation.amount, wallet.currency)}`
       )} успешно добавлена`,
@@ -54,7 +57,7 @@ export const MESSAGES = {
           md`Последние ${count} операций по кошельку ${md.bold(wallet.name)}:`,
           ...operations.map(
             (operation) =>
-              md`${md.bold(operation.name)} [${fns.format(
+              md`${md.bold(operation.description)} [${fns.format(
                 new Date(operation.date),
                 'dd.MM HH:mm'
               )}]: ${formatAmount(operation.amount, wallet.currency)}`

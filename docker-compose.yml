@@ -1,8 +1,48 @@
-version: "3.8"
+networks:
+  raxee-expense-bot-net:
+    name: raxee-expense-bot-net
 
 services:
   bot:
     build: .
+    networks:
+      - raxee-expense-bot-net
+    environment:
+      MONGO_URL: mongodb://mongo:27017/main
+    restart: always
+
+  mongo:
+    image: bitnami/mongodb:4.4
+    networks:
+      - raxee-expense-bot-net
+    environment:
+      ALLOW_EMPTY_PASSWORD: true
+      MONGODB_ADVERTISED_HOSTNAME: mongo
+      MONGODB_REPLICA_SET_MODE: primary
     volumes:
-      - $PWD/db:/app/db
+      - $PWD/db:/bitnami
+    restart: always
+
+  mongo-secondary:
+    image: bitnami/mongodb:4.4
+    depends_on:
+      - mongo
+    networks:
+      - raxee-expense-bot-net
+    environment:
+      ALLOW_EMPTY_PASSWORD: true
+      MONGODB_REPLICA_SET_MODE: secondary
+      MONGODB_INITIAL_PRIMARY_HOST: mongo
+    restart: always
+
+  mongo-arbiter:
+    image: bitnami/mongodb:4.4
+    depends_on:
+      - mongo
+    networks:
+      - raxee-expense-bot-net
+    environment:
+      ALLOW_EMPTY_PASSWORD: true
+      MONGODB_REPLICA_SET_MODE: arbiter
+      MONGODB_INITIAL_PRIMARY_HOST: mongo
     restart: always
