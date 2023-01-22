@@ -151,4 +151,19 @@ export class Expense {
       })
     )
   }
+
+  async getCategories() {
+    const items = await this.prisma.operation.groupBy({
+      where: {
+        wallet: {
+          chatId: this.chatId,
+        },
+        category: {
+          not: INITIAL_BALANCE,
+        },
+      },
+      by: ['category'],
+    })
+    return items.map((item) => item.category)
+  }
 }

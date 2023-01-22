@@ -1,5 +1,5 @@
 import { Wallet } from '@prisma/client'
-import { MESSAGES } from '../constants'
+import { DO_NOT_CHANGE, MESSAGES } from '../constants'
 import { CustomContext } from '../types'
 import { extractObjectId } from '../utils/extractObjectId'
 import { BaseConversation, ConversationQuestion } from './BaseConversation'
@@ -36,22 +36,28 @@ export class EditWallet extends BaseConversation<Answers> {
       answered: () => !!this.answers.name,
       sendMessage: async (ctx) => {
         await ctx.replyWithMarkdown(MESSAGES.editWallet.name, {
-          reply_markup: { keyboard: [[this.answers.wallet?.name || '']] },
+          reply_markup: { keyboard: [[DO_NOT_CHANGE]] },
         })
       },
       handleReply: (ctx) => {
-        this.answers.name = ctx.message?.text
+        this.answers.name =
+          ctx.message?.text === DO_NOT_CHANGE
+            ? this.answers.wallet?.name
+            : ctx.message?.text
       },
     },
     {
       answered: () => !!this.answers.currency,
       sendMessage: async (ctx) => {
         await ctx.replyWithMarkdown(MESSAGES.editWallet.currency, {
-          reply_markup: { keyboard: [[this.answers.wallet?.currency || '']] },
+          reply_markup: { keyboard: [[DO_NOT_CHANGE]] },
         })
       },
       handleReply: (ctx) => {
-        this.answers.currency = ctx.message?.text
+        this.answers.currency =
+          ctx.message?.text === DO_NOT_CHANGE
+            ? this.answers.wallet?.currency
+            : ctx.message?.text
       },
     },
   ]

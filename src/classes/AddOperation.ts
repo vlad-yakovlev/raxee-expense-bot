@@ -37,8 +37,9 @@ export class AddOperation extends BaseConversation<Answers> {
     {
       answered: () => !!this.answers.category,
       sendMessage: async (ctx) => {
+        const categories = await ctx.expense.getCategories()
         await ctx.replyWithMarkdown(MESSAGES.addOperation.category, {
-          reply_markup: { remove_keyboard: true },
+          reply_markup: { keyboard: categories.map((category) => [category]) },
         })
       },
       handleReply: (ctx) => {

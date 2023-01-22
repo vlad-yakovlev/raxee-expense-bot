@@ -1,8 +1,7 @@
 import { Operation, Wallet } from '@prisma/client'
-import { LAST_OPERATIONS_COUNT, MESSAGES } from '../constants'
+import { DO_NOT_CHANGE, LAST_OPERATIONS_COUNT, MESSAGES } from '../constants'
 import { CustomContext } from '../types'
 import { extractObjectId } from '../utils/extractObjectId'
-import { formatAmount } from '../utils/formatAmount'
 import { parseAmount } from '../utils/parseAmount'
 import { BaseConversation, ConversationQuestion } from './BaseConversation'
 
@@ -24,9 +23,11 @@ export class EditOperation extends BaseConversation<Answers> {
         })
         await ctx.replyWithMarkdown(MESSAGES.editOperation.operation, {
           reply_markup: {
-            keyboard: operations.map((operation) => [
-              `${operation.description} [${operation.id}]`,
-            ]),
+            keyboard: [...operations]
+              .reverse()
+              .map((operation) => [
+                `${operation.description} [${operation.id}]`,
+              ]),
           },
         })
       },
@@ -44,14 +45,18 @@ export class EditOperation extends BaseConversation<Answers> {
         const wallets = await ctx.expense.getWallets()
         await ctx.replyWithMarkdown(MESSAGES.editOperation.wallet, {
           reply_markup: {
-            keyboard: wallets.map((wallet) => [
-              `${wallet.name} [${wallet.id}]`,
-            ]),
+            keyboard: [
+              [DO_NOT_CHANGE],
+              ...wallets.map((wallet) => [`${wallet.name} [${wallet.id}]`]),
+            ],
           },
         })
       },
       handleReply: async (ctx) => {
-        const walletId = extractObjectId(ctx.message?.text)
+        const walletId =
+          ctx.message?.text === DO_NOT_CHANGE
+            ? this.answers.operation?.walletId
+            : extractObjectId(ctx.message?.text)
         if (walletId) {
           const wallet = await ctx.expense.getWallet(walletId)
           this.answers.wallet = wallet || undefined
@@ -61,39 +66,49 @@ export class EditOperation extends BaseConversation<Answers> {
     {
       answered: () => !!this.answers.category,
       sendMessage: async (ctx) => {
+        const categories = await ctx.expense.getCategories()
         await ctx.replyWithMarkdown(MESSAGES.editOperation.category, {
           reply_markup: {
-            keyboard: [[this.answers.operation?.category || '']],
+            keyboard: [
+              [DO_NOT_CHANGE],
+              ...categories.map((category) => [category]),
+            ],
           },
         })
       },
       handleReply: (ctx) => {
-        this.answers.category = ctx.message?.text || ''
+        this.answers.category =
+          ctx.message?.text === DO_NOT_CHANGE
+            ? this.answers.operation?.category
+            : ctx.message?.text
       },
     },
     {
       answered: () => !!this.answers.description,
       sendMessage: async (ctx) => {
         await ctx.replyWithMarkdown(MESSAGES.editOperation.description, {
-          reply_markup: {
-            keyboard: [[this.answers.operation?.description || '']],
-          },
+          reply_markup: { keyboard: [[DO_NOT_CHANGE]] },
         })
       },
       handleReply: (ctx) => {
-        this.answers.description = ctx.message?.text
+        this.answers.description =
+          ctx.message?.text === DO_NOT_CHANGE
+            ? this.answers.operation?.description
+            : ctx.message?.text
       },
     },
     {
       answered: () => !!this.answers.amount && !isNaN(this.answers.amount),
       sendMessage: async (ctx) => {
-        const amount = formatAmount(this.answers.operation?.amount || 0, '')
         await ctx.replyWithMarkdown(MESSAGES.editOperation.amount, {
-          reply_markup: { keyboard: [[amount]] },
+          reply_markup: { keyboard: [[DO_NOT_CHANGE]] },
         })
       },
       handleReply: (ctx) => {
-        this.answers.amount = parseAmount(ctx.message?.text)
+        this.answers.amount =
+          ctx.message?.text === DO_NOT_CHANGE
+            ? this.answers.operation?.amount
+            : parseAmount(ctx.message?.text)
       },
     },
   ]
