@@ -1,5 +1,5 @@
 import { AMOUNT_MULTIPLIER } from '../constants'
 
 export const parseAmount = (amount: string | undefined) => {
-  return Number(amount) * AMOUNT_MULTIPLIER
+  return Math.round(Number(amount) * AMOUNT_MULTIPLIER)
 }
