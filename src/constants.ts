@@ -33,6 +33,7 @@ export const MESSAGES = {
     wallet: 'Выберите кошелек:',
     category: 'Введите название категории:',
     description: 'Введите описание операции:',
+    type: 'Выберите тип операции:',
     amount: 'Введите сумму операции:',
     done: (wallet: Wallet, operation: Operation) =>
       md`Операция ${formatOperation(wallet, operation)} успешно добавлена`,
@@ -43,6 +44,7 @@ export const MESSAGES = {
     wallet: 'Выберите кошелек:',
     category: 'Введите название категории:',
     description: 'Введите описание операции:',
+    type: 'Выберите тип операции:',
     amount: 'Введите сумму операции:',
     done: (wallet: Wallet, operation: Operation) =>
       md`Операция ${formatOperation(wallet, operation)} успешно обновлена`,

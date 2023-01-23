@@ -10,6 +10,7 @@ interface Answers {
   operation: Operation
   category: string
   description: string
+  sign: number
   amount: number
 }
 
@@ -98,6 +99,26 @@ export class EditOperation extends BaseConversation<Answers> {
       },
     },
     {
+      answered: () => !!this.answers.sign,
+      sendMessage: async (ctx) => {
+        await ctx.replyWithMarkdown(MESSAGES.editOperation.type, {
+          reply_markup: { keyboard: [[DO_NOT_CHANGE], ['+', '-']] },
+        })
+      },
+      handleReply: (ctx) => {
+        if (
+          ctx.message?.text === DO_NOT_CHANGE &&
+          this.answers.operation?.amount
+        ) {
+          this.answers.sign = this.answers.operation.amount >= 0 ? 1 : -1
+        } else if (ctx.message?.text === '+') {
+          this.answers.sign = 1
+        } else if (ctx.message?.text === '-') {
+          this.answers.sign = -1
+        }
+      },
+    },
+    {
       answered: () => !!this.answers.amount && !isNaN(this.answers.amount),
       sendMessage: async (ctx) => {
         await ctx.replyWithMarkdown(MESSAGES.editOperation.amount, {
@@ -116,7 +137,7 @@ export class EditOperation extends BaseConversation<Answers> {
   async handleDone(ctx: CustomContext, answers: Answers) {
     const operation = await ctx.expense.updateOperation(answers.operation.id, {
       description: answers.description,
-      amount: answers.amount,
+      amount: answers.sign * Math.abs(answers.amount),
       category: answers.category,
       walletId: answers.wallet.id,
     })
