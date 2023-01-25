@@ -5,7 +5,7 @@ import { formatDate } from './utils/formatDate'
 import { formatOperation } from './utils/formatOperation'
 
 export const AMOUNT_MULTIPLIER = 1e4
-export const LAST_OPERATIONS_COUNT = 10
+export const LAST_OPERATIONS_COUNT = 50
 
 export const INITIAL_BALANCE = 'Начальный баланс'
 export const DO_NOT_CHANGE = '[Не менять]'
