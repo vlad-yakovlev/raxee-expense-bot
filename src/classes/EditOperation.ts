@@ -6,8 +6,8 @@ import { parseAmount } from '../utils/parseAmount'
 import { BaseConversation, ConversationQuestion } from './BaseConversation'
 
 interface Answers {
-  wallet: Wallet
   operation: Operation
+  wallet: Wallet
   category: string
   description: string
   sign: number

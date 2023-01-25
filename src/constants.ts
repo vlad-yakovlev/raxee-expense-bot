@@ -50,6 +50,12 @@ export const MESSAGES = {
       md`Операция ${formatOperation(wallet, operation)} успешно обновлена`,
   },
 
+  removeOperation: {
+    operation: 'Выберите операцию:',
+    done: (wallet: Wallet, operation: Operation) =>
+      md`Операция ${formatOperation(wallet, operation)} успешно удалена`,
+  },
+
   showBalances: {
     done: (balances: { wallet: Wallet; balance: number }[]) =>
       md.join(

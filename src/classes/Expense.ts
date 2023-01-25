@@ -103,6 +103,17 @@ export class Expense {
     })
   }
 
+  async deleteOperation(id: string) {
+    await this.prisma.operation.delete({
+      where: {
+        wallet: {
+          chatId: this.chatId,
+        },
+        id,
+      },
+    })
+  }
+
   async getOperation(id: string) {
     return await this.prisma.operation.findFirst({
       where: {
@@ -110,6 +121,20 @@ export class Expense {
           chatId: this.chatId,
         },
         id,
+      },
+    })
+  }
+
+  async getOperationWithWallet(id: string) {
+    return await this.prisma.operation.findFirst({
+      where: {
+        wallet: {
+          chatId: this.chatId,
+        },
+        id,
+      },
+      include: {
+        wallet: true,
       },
     })
   }

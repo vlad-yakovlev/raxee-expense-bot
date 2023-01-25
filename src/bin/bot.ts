@@ -5,6 +5,7 @@ import { AddOperation } from '../classes/AddOperation'
 import { AddWallet } from '../classes/AddWallet'
 import { EditOperation } from '../classes/EditOperation'
 import { EditWallet } from '../classes/EditWallet'
+import { RemoveOperation } from '../classes/RemoveOperation'
 import { ShowBalances } from '../classes/ShowBalances'
 import { ShowLastOperations } from '../classes/ShowLastOperations'
 import { expenseMiddleware } from '../middleware/expense'
@@ -42,6 +43,10 @@ export const runBot = async (options: RunBotOptions) => {
       description: 'Редактировать операцию',
     },
     {
+      command: 'remove_operation',
+      description: 'Удалить операцию',
+    },
+    {
       command: 'show_balances',
       description: 'Показать балансы кошельков',
     },
@@ -65,6 +70,10 @@ export const runBot = async (options: RunBotOptions) => {
 
   bot.command('edit_operation', async (ctx) => {
     await ctx.session.conversation.start(ctx, EditOperation)
+  })
+
+  bot.command('remove_operation', async (ctx) => {
+    await ctx.session.conversation.start(ctx, RemoveOperation)
   })
 
   bot.command('show_balances', async (ctx) => {
