@@ -10,7 +10,7 @@ interface Answers {
   currency: string
 }
 
-export class EditWallet extends BaseConversation<Answers> {
+export class UpdateWallet extends BaseConversation<Answers> {
   questions: ConversationQuestion[] = [
     {
       answered: () => !!this.answers.wallet,

@@ -1,11 +1,12 @@
 import { PrismaClient } from '@prisma/client'
 import { Bot } from 'grammy'
 import { replyWithMarkdownPlugin } from 'grammy-reply-with-markdown'
-import { AddOperation } from '../classes/AddOperation'
-import { AddWallet } from '../classes/AddWallet'
-import { EditOperation } from '../classes/EditOperation'
-import { EditWallet } from '../classes/EditWallet'
-import { RemoveOperation } from '../classes/RemoveOperation'
+import { CreateOperation } from '../classes/CreateOperation'
+import { CreateWallet } from '../classes/CreateWallet'
+import { UpdateOperation } from '../classes/UpdateOperation'
+import { UpdateWallet } from '../classes/UpdateWallet'
+import { DeleteOperation } from '../classes/DeleteOperation'
+import { RenameCategory } from '../classes/RenameCategory'
 import { ShowBalances } from '../classes/ShowBalances'
 import { ShowLastOperations } from '../classes/ShowLastOperations'
 import { expenseMiddleware } from '../middleware/expense'
@@ -27,24 +28,28 @@ export const runBot = async (options: RunBotOptions) => {
 
   await bot.api.setMyCommands([
     {
-      command: 'add_wallet',
+      command: 'create_wallet',
       description: 'Добавить кошелек',
     },
     {
-      command: 'edit_wallet',
+      command: 'update_wallet',
       description: 'Редактировать кошелек',
     },
     {
-      command: 'add_operation',
+      command: 'create_operation',
       description: 'Добавить операцию',
     },
     {
-      command: 'edit_operation',
+      command: 'update_operation',
       description: 'Редактировать операцию',
     },
     {
-      command: 'remove_operation',
+      command: 'delete_operation',
       description: 'Удалить операцию',
+    },
+    {
+      command: 'rename_category',
+      description: 'Переименовать категорию',
     },
     {
       command: 'show_balances',
@@ -56,24 +61,28 @@ export const runBot = async (options: RunBotOptions) => {
     },
   ])
 
-  bot.command('add_wallet', async (ctx) => {
-    await ctx.session.conversation.start(ctx, AddWallet)
+  bot.command('create_wallet', async (ctx) => {
+    await ctx.session.conversation.start(ctx, CreateWallet)
   })
 
-  bot.command('edit_wallet', async (ctx) => {
-    await ctx.session.conversation.start(ctx, EditWallet)
+  bot.command('update_wallet', async (ctx) => {
+    await ctx.session.conversation.start(ctx, UpdateWallet)
   })
 
-  bot.command('add_operation', async (ctx) => {
-    await ctx.session.conversation.start(ctx, AddOperation)
+  bot.command('create_operation', async (ctx) => {
+    await ctx.session.conversation.start(ctx, CreateOperation)
   })
 
-  bot.command('edit_operation', async (ctx) => {
-    await ctx.session.conversation.start(ctx, EditOperation)
+  bot.command('update_operation', async (ctx) => {
+    await ctx.session.conversation.start(ctx, UpdateOperation)
   })
 
-  bot.command('remove_operation', async (ctx) => {
-    await ctx.session.conversation.start(ctx, RemoveOperation)
+  bot.command('delete_operation', async (ctx) => {
+    await ctx.session.conversation.start(ctx, DeleteOperation)
+  })
+
+  bot.command('rename_category', async (ctx) => {
+    await ctx.session.conversation.start(ctx, RenameCategory)
   })
 
   bot.command('show_balances', async (ctx) => {

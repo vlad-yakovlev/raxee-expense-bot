@@ -177,6 +177,20 @@ export class Expense {
     )
   }
 
+  async renameCategory(from: string, to: string) {
+    await this.prisma.operation.updateMany({
+      where: {
+        wallet: {
+          chatId: this.chatId,
+        },
+        category: from,
+      },
+      data: {
+        category: to,
+      },
+    })
+  }
+
   async getCategories() {
     const items = await this.prisma.operation.groupBy({
       where: {
@@ -188,6 +202,9 @@ export class Expense {
         },
       },
       by: ['category'],
+      orderBy: {
+        category: 'asc',
+      },
     })
     return items.map((item) => item.category)
   }

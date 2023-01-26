@@ -10,7 +10,8 @@ export class ShowBalances extends BaseConversation<Answers> {
 
   async handleDone(ctx: CustomContext) {
     await ctx.replyWithMarkdown(
-      MESSAGES.showBalances.done(await ctx.expense.getBalances())
+      MESSAGES.showBalances.done(await ctx.expense.getBalances()),
+      { reply_markup: { remove_keyboard: true } }
     )
   }
 }

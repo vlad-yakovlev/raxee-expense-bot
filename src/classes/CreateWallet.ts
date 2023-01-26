@@ -9,12 +9,14 @@ interface Answers {
   balance: number
 }
 
-export class AddWallet extends BaseConversation<Answers> {
+export class CreateWallet extends BaseConversation<Answers> {
   questions: ConversationQuestion[] = [
     {
       answered: () => !!this.answers.name,
       sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.addWallet.name)
+        await ctx.replyWithMarkdown(MESSAGES.addWallet.name, {
+          reply_markup: { remove_keyboard: true },
+        })
       },
       handleReply: (ctx) => {
         this.answers.name = ctx.message?.text
@@ -23,7 +25,9 @@ export class AddWallet extends BaseConversation<Answers> {
     {
       answered: () => !!this.answers.currency,
       sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.addWallet.currency)
+        await ctx.replyWithMarkdown(MESSAGES.addWallet.currency, {
+          reply_markup: { remove_keyboard: true },
+        })
       },
       handleReply: (ctx) => {
         this.answers.currency = ctx.message?.text
@@ -32,7 +36,9 @@ export class AddWallet extends BaseConversation<Answers> {
     {
       answered: () => !!this.answers.balance && !isNaN(this.answers.balance),
       sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.addWallet.balance)
+        await ctx.replyWithMarkdown(MESSAGES.addWallet.balance, {
+          reply_markup: { remove_keyboard: true },
+        })
       },
       handleReply: (ctx) => {
         this.answers.balance = parseAmount(ctx.message?.text)
@@ -48,7 +54,8 @@ export class AddWallet extends BaseConversation<Answers> {
     })
 
     await ctx.replyWithMarkdown(
-      MESSAGES.addWallet.done(wallet, answers.balance)
+      MESSAGES.addWallet.done(wallet, answers.balance),
+      { reply_markup: { remove_keyboard: true } }
     )
   }
 }

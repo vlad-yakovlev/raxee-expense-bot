@@ -8,7 +8,7 @@ interface Answers {
   operation: Operation & { wallet: Wallet }
 }
 
-export class RemoveOperation extends BaseConversation<Answers> {
+export class DeleteOperation extends BaseConversation<Answers> {
   questions: ConversationQuestion[] = [
     {
       answered: () => !!this.answers.operation,

@@ -13,7 +13,7 @@ interface Answers {
   amount: number
 }
 
-export class AddOperation extends BaseConversation<Answers> {
+export class CreateOperation extends BaseConversation<Answers> {
   questions: ConversationQuestion[] = [
     {
       answered: () => !!this.answers.wallet,

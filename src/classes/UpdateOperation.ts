@@ -14,7 +14,7 @@ interface Answers {
   amount: number
 }
 
-export class EditOperation extends BaseConversation<Answers> {
+export class UpdateOperation extends BaseConversation<Answers> {
   questions: ConversationQuestion[] = [
     {
       answered: () => !!this.answers.operation,
