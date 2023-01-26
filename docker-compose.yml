@@ -5,6 +5,10 @@ networks:
 services:
   bot:
     build: .
+    depends_on:
+      - mongo
+      - mongo-secondary
+      - mongo-arbiter
     networks:
       - raxee-expense-bot-net
     environment:
