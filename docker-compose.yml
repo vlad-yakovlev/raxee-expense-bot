@@ -17,8 +17,6 @@ services:
     image: mongo:5.0
     networks:
       - raxee-expense-bot-net
-    ports:
-      - 27017:27017
     volumes:
       - $PWD/db:/data/db
     healthcheck:
