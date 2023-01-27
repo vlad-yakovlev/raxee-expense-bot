@@ -8,10 +8,11 @@ export const AMOUNT_MULTIPLIER = 1e4
 export const LAST_OPERATIONS_COUNT = 50
 
 export const INITIAL_BALANCE = 'Начальный баланс'
+export const EXCHANGE = 'Обмен 💱'
 export const DO_NOT_CHANGE = '[Не менять]'
 
 export const MESSAGES = {
-  addWallet: {
+  createWallet: {
     name: 'Введите название кошелька:',
     currency: 'Введите валюту кошелька:',
     balance: 'Введите начальный баланс кошелька:',
@@ -21,7 +22,7 @@ export const MESSAGES = {
       )} успешно добавлен`,
   },
 
-  editWallet: {
+  updateWallet: {
     wallet: 'Выберите кошелек:',
     name: 'Введите название кошелька:',
     currency: 'Введите валюту кошелька:',
@@ -29,7 +30,7 @@ export const MESSAGES = {
       md`Кошелек ${md.bold(wallet.name)} успешно обновлен`,
   },
 
-  addOperation: {
+  createOperation: {
     wallet: 'Выберите кошелек:',
     category: 'Выберите или введите название категории:',
     description: 'Введите описание операции:',
@@ -39,7 +40,7 @@ export const MESSAGES = {
       md`Операция ${formatOperation(wallet, operation)} успешно добавлена`,
   },
 
-  editOperation: {
+  updateOperation: {
     operation: 'Выберите операцию:',
     wallet: 'Выберите кошелек:',
     category: 'Выберите или введите название категории:',
@@ -50,17 +51,34 @@ export const MESSAGES = {
       md`Операция ${formatOperation(wallet, operation)} успешно обновлена`,
   },
 
+  deleteOperation: {
+    operation: 'Выберите операцию:',
+    done: (wallet: Wallet, operation: Operation) =>
+      md`Операция ${formatOperation(wallet, operation)} успешно удалена`,
+  },
+
+  createExchangeOperation: {
+    walletFrom: 'Выберите кошелек списания:',
+    walletTo: 'Выберите кошелек пополнения:',
+    amountFrom: 'Введите сумму списания:',
+    amountTo: 'Введите сумму пополнения:',
+    done: (
+      walletFrom: Wallet,
+      walletTo: Wallet,
+      amountFrom: number,
+      amountTo: number
+    ) => {
+      const from = formatAmount(amountFrom, walletFrom.currency)
+      const to = formatAmount(amountTo, walletTo.currency)
+      return md`Операция обмена ${md.bold(`${from} → ${to}`)} успешно добавлена`
+    },
+  },
+
   renameCategory: {
     from: 'Выберите категорию:',
     to: 'Введите новое название категории:',
     done: (from: string, to: string) =>
       md`Категория ${md.bold(from)} успешно переименована в ${md.bold(to)}`,
-  },
-
-  removeOperation: {
-    operation: 'Выберите операцию:',
-    done: (wallet: Wallet, operation: Operation) =>
-      md`Операция ${formatOperation(wallet, operation)} успешно удалена`,
   },
 
   showBalances: {

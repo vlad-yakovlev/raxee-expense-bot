@@ -14,7 +14,7 @@ export class ShowLastOperations extends BaseConversation<Answers> {
       answered: () => !!this.answers.wallet,
       sendMessage: async (ctx) => {
         const wallets = await ctx.expense.getWallets()
-        await ctx.replyWithMarkdown(MESSAGES.addOperation.wallet, {
+        await ctx.replyWithMarkdown(MESSAGES.createOperation.wallet, {
           reply_markup: {
             keyboard: wallets.map((wallet) => [
               `${wallet.name} [${wallet.id}]`,

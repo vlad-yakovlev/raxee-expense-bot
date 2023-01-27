@@ -13,6 +13,7 @@ import { expenseMiddleware } from '../middleware/expense'
 import { sessionMiddleware } from '../middleware/session'
 import { CustomContext } from '../types'
 import { handleError } from '../utils/handleError'
+import { CreateExchangeOperation } from '../classes/CreateExchangeOperation'
 
 interface RunBotOptions {
   botToken: string
@@ -48,6 +49,10 @@ export const runBot = async (options: RunBotOptions) => {
       description: 'Удалить операцию',
     },
     {
+      command: 'create_exchange_operation',
+      description: 'Добавить операцию обмена',
+    },
+    {
       command: 'rename_category',
       description: 'Переименовать категорию',
     },
@@ -79,6 +84,10 @@ export const runBot = async (options: RunBotOptions) => {
 
   bot.command('delete_operation', async (ctx) => {
     await ctx.session.conversation.start(ctx, DeleteOperation)
+  })
+
+  bot.command('create_exchange_operation', async (ctx) => {
+    await ctx.session.conversation.start(ctx, CreateExchangeOperation)
   })
 
   bot.command('rename_category', async (ctx) => {

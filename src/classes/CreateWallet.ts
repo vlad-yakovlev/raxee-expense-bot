@@ -14,7 +14,7 @@ export class CreateWallet extends BaseConversation<Answers> {
     {
       answered: () => !!this.answers.name,
       sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.addWallet.name, {
+        await ctx.replyWithMarkdown(MESSAGES.createWallet.name, {
           reply_markup: { remove_keyboard: true },
         })
       },
@@ -25,7 +25,7 @@ export class CreateWallet extends BaseConversation<Answers> {
     {
       answered: () => !!this.answers.currency,
       sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.addWallet.currency, {
+        await ctx.replyWithMarkdown(MESSAGES.createWallet.currency, {
           reply_markup: { remove_keyboard: true },
         })
       },
@@ -34,9 +34,9 @@ export class CreateWallet extends BaseConversation<Answers> {
       },
     },
     {
-      answered: () => !!this.answers.balance && !isNaN(this.answers.balance),
+      answered: () => !isNaN(this.answers.balance ?? NaN),
       sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.addWallet.balance, {
+        await ctx.replyWithMarkdown(MESSAGES.createWallet.balance, {
           reply_markup: { remove_keyboard: true },
         })
       },
@@ -54,7 +54,7 @@ export class CreateWallet extends BaseConversation<Answers> {
     })
 
     await ctx.replyWithMarkdown(
-      MESSAGES.addWallet.done(wallet, answers.balance),
+      MESSAGES.createWallet.done(wallet, answers.balance),
       { reply_markup: { remove_keyboard: true } }
     )
   }

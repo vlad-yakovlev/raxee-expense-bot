@@ -16,7 +16,7 @@ export class DeleteOperation extends BaseConversation<Answers> {
         const operations = await ctx.expense.getLastOperations({
           count: LAST_OPERATIONS_COUNT,
         })
-        await ctx.replyWithMarkdown(MESSAGES.removeOperation.operation, {
+        await ctx.replyWithMarkdown(MESSAGES.deleteOperation.operation, {
           reply_markup: {
             keyboard: [...operations]
               .reverse()
@@ -42,7 +42,7 @@ export class DeleteOperation extends BaseConversation<Answers> {
     await ctx.expense.deleteOperation(answers.operation.id)
 
     await ctx.replyWithMarkdown(
-      MESSAGES.removeOperation.done(
+      MESSAGES.deleteOperation.done(
         answers.operation.wallet,
         answers.operation
       ),

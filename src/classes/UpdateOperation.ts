@@ -22,7 +22,7 @@ export class UpdateOperation extends BaseConversation<Answers> {
         const operations = await ctx.expense.getLastOperations({
           count: LAST_OPERATIONS_COUNT,
         })
-        await ctx.replyWithMarkdown(MESSAGES.editOperation.operation, {
+        await ctx.replyWithMarkdown(MESSAGES.updateOperation.operation, {
           reply_markup: {
             keyboard: [...operations]
               .reverse()
@@ -44,7 +44,7 @@ export class UpdateOperation extends BaseConversation<Answers> {
       answered: () => !!this.answers.wallet,
       sendMessage: async (ctx) => {
         const wallets = await ctx.expense.getWallets()
-        await ctx.replyWithMarkdown(MESSAGES.editOperation.wallet, {
+        await ctx.replyWithMarkdown(MESSAGES.updateOperation.wallet, {
           reply_markup: {
             keyboard: [
               [DO_NOT_CHANGE],
@@ -68,7 +68,7 @@ export class UpdateOperation extends BaseConversation<Answers> {
       answered: () => !!this.answers.category,
       sendMessage: async (ctx) => {
         const categories = await ctx.expense.getCategories()
-        await ctx.replyWithMarkdown(MESSAGES.editOperation.category, {
+        await ctx.replyWithMarkdown(MESSAGES.updateOperation.category, {
           reply_markup: {
             keyboard: [
               [DO_NOT_CHANGE],
@@ -87,7 +87,7 @@ export class UpdateOperation extends BaseConversation<Answers> {
     {
       answered: () => !!this.answers.description,
       sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.editOperation.description, {
+        await ctx.replyWithMarkdown(MESSAGES.updateOperation.description, {
           reply_markup: { keyboard: [[DO_NOT_CHANGE]] },
         })
       },
@@ -101,7 +101,7 @@ export class UpdateOperation extends BaseConversation<Answers> {
     {
       answered: () => !!this.answers.sign,
       sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.editOperation.type, {
+        await ctx.replyWithMarkdown(MESSAGES.updateOperation.type, {
           reply_markup: { keyboard: [[DO_NOT_CHANGE], ['+', '-']] },
         })
       },
@@ -119,9 +119,9 @@ export class UpdateOperation extends BaseConversation<Answers> {
       },
     },
     {
-      answered: () => !!this.answers.amount && !isNaN(this.answers.amount),
+      answered: () => !isNaN(this.answers.amount ?? NaN),
       sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.editOperation.amount, {
+        await ctx.replyWithMarkdown(MESSAGES.updateOperation.amount, {
           reply_markup: { keyboard: [[DO_NOT_CHANGE]] },
         })
       },
@@ -143,7 +143,7 @@ export class UpdateOperation extends BaseConversation<Answers> {
     })
 
     await ctx.replyWithMarkdown(
-      MESSAGES.editOperation.done(answers.wallet, operation),
+      MESSAGES.updateOperation.done(answers.wallet, operation),
       { reply_markup: { remove_keyboard: true } }
     )
   }

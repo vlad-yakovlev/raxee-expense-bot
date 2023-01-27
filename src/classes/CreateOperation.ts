@@ -19,7 +19,7 @@ export class CreateOperation extends BaseConversation<Answers> {
       answered: () => !!this.answers.wallet,
       sendMessage: async (ctx) => {
         const wallets = await ctx.expense.getWallets()
-        await ctx.replyWithMarkdown(MESSAGES.addOperation.wallet, {
+        await ctx.replyWithMarkdown(MESSAGES.createOperation.wallet, {
           reply_markup: {
             keyboard: wallets.map((wallet) => [
               `${wallet.name} [${wallet.id}]`,
@@ -39,7 +39,7 @@ export class CreateOperation extends BaseConversation<Answers> {
       answered: () => !!this.answers.category,
       sendMessage: async (ctx) => {
         const categories = await ctx.expense.getCategories()
-        await ctx.replyWithMarkdown(MESSAGES.addOperation.category, {
+        await ctx.replyWithMarkdown(MESSAGES.createOperation.category, {
           reply_markup: { keyboard: categories.map((category) => [category]) },
         })
       },
@@ -50,7 +50,7 @@ export class CreateOperation extends BaseConversation<Answers> {
     {
       answered: () => !!this.answers.description,
       sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.addOperation.description, {
+        await ctx.replyWithMarkdown(MESSAGES.createOperation.description, {
           reply_markup: { remove_keyboard: true },
         })
       },
@@ -61,7 +61,7 @@ export class CreateOperation extends BaseConversation<Answers> {
     {
       answered: () => !!this.answers.sign,
       sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.addOperation.type, {
+        await ctx.replyWithMarkdown(MESSAGES.createOperation.type, {
           reply_markup: { keyboard: [['+', '-']] },
         })
       },
@@ -74,9 +74,9 @@ export class CreateOperation extends BaseConversation<Answers> {
       },
     },
     {
-      answered: () => !!this.answers.amount && !isNaN(this.answers.amount),
+      answered: () => !isNaN(this.answers.amount ?? NaN),
       sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.addOperation.amount, {
+        await ctx.replyWithMarkdown(MESSAGES.createOperation.amount, {
           reply_markup: { remove_keyboard: true },
         })
       },
@@ -95,7 +95,7 @@ export class CreateOperation extends BaseConversation<Answers> {
     })
 
     await ctx.replyWithMarkdown(
-      MESSAGES.addOperation.done(answers.wallet, operation),
+      MESSAGES.createOperation.done(answers.wallet, operation),
       { reply_markup: { remove_keyboard: true } }
     )
   }

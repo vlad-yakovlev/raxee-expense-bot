@@ -16,7 +16,7 @@ export class UpdateWallet extends BaseConversation<Answers> {
       answered: () => !!this.answers.wallet,
       sendMessage: async (ctx) => {
         const wallets = await ctx.expense.getWallets()
-        await ctx.replyWithMarkdown(MESSAGES.addOperation.wallet, {
+        await ctx.replyWithMarkdown(MESSAGES.createOperation.wallet, {
           reply_markup: {
             keyboard: wallets.map((wallet) => [
               `${wallet.name} [${wallet.id}]`,
@@ -35,7 +35,7 @@ export class UpdateWallet extends BaseConversation<Answers> {
     {
       answered: () => !!this.answers.name,
       sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.editWallet.name, {
+        await ctx.replyWithMarkdown(MESSAGES.updateWallet.name, {
           reply_markup: { keyboard: [[DO_NOT_CHANGE]] },
         })
       },
@@ -49,7 +49,7 @@ export class UpdateWallet extends BaseConversation<Answers> {
     {
       answered: () => !!this.answers.currency,
       sendMessage: async (ctx) => {
-        await ctx.replyWithMarkdown(MESSAGES.editWallet.currency, {
+        await ctx.replyWithMarkdown(MESSAGES.updateWallet.currency, {
           reply_markup: { keyboard: [[DO_NOT_CHANGE]] },
         })
       },
@@ -68,7 +68,7 @@ export class UpdateWallet extends BaseConversation<Answers> {
       currency: answers.currency,
     })
 
-    await ctx.replyWithMarkdown(MESSAGES.editWallet.done(wallet), {
+    await ctx.replyWithMarkdown(MESSAGES.updateWallet.done(wallet), {
       reply_markup: { remove_keyboard: true },
     })
   }
