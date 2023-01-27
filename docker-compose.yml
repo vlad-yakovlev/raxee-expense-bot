@@ -7,8 +7,6 @@ services:
     build: .
     depends_on:
       - mongo
-      - mongo-secondary
-      - mongo-arbiter
     networks:
       - raxee-expense-bot-net
     environment:
@@ -16,37 +14,17 @@ services:
     restart: always
 
   mongo:
-    image: bitnami/mongodb:4.4
+    image: mongo:5.0
     networks:
       - raxee-expense-bot-net
-    environment:
-      ALLOW_EMPTY_PASSWORD: true
-      MONGODB_ADVERTISED_HOSTNAME: mongo
-      MONGODB_REPLICA_SET_MODE: primary
+    ports:
+      - 27017:27017
     volumes:
-      - $PWD/db:/bitnami/mongodb/data/db
-    restart: always
-
-  mongo-secondary:
-    image: bitnami/mongodb:4.4
-    depends_on:
-      - mongo
-    networks:
-      - raxee-expense-bot-net
-    environment:
-      ALLOW_EMPTY_PASSWORD: true
-      MONGODB_REPLICA_SET_MODE: secondary
-      MONGODB_INITIAL_PRIMARY_HOST: mongo
-    restart: always
-
-  mongo-arbiter:
-    image: bitnami/mongodb:4.4
-    depends_on:
-      - mongo
-    networks:
-      - raxee-expense-bot-net
-    environment:
-      ALLOW_EMPTY_PASSWORD: true
-      MONGODB_REPLICA_SET_MODE: arbiter
-      MONGODB_INITIAL_PRIMARY_HOST: mongo
+      - $PWD/db:/data/db
+    healthcheck:
+      test: |
+        test $$(mongo --quiet --eval "rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'mongo' }] }).ok || rs.status().ok") -eq 1
+      interval: 10s
+      start_period: 30s
+    command: '--bind_ip_all --replSet rs0'
     restart: always
